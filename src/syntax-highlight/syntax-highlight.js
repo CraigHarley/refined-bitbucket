@@ -28,8 +28,8 @@ module.exports = (function syntaxHighlight() {
         let style = document.createElement('style');
         const styleArray = [];
         style.type = 'text/css';
-        // Prism css
-        styleArray.push('.token.comment,.token.prolog,.token.doctype,.token.cdata{color: slategray}.token.punctuation{color: #999}.namespace{opacity: .7}.token.property,.token.tag,.token.boolean,.token.number,.token.constant,.token.symbol,.token.deleted{color: #905}.token.selector,.token.attr-name,.token.string,.token.char,.token.builtin,.token.inserted{color: #690}.token.operator,.token.entity,.token.url,.language-css .token.string,.style .token.string{color: #a67f59;background: hsla(0, 0%, 100%, .5)}.token.atrule,.token.attr-value,.token.keyword{color: #07a}.token.function{color: #DD4A68}.token.regex,.token.important,.token.variable{color: #e90}.token.important,.token.bold{font-weight: bold}.token.italic{font-style: italic}.token.entity{cursor: help}');
+        // Prism css: okaidia theme
+        styleArray.push('code[class*=language-],pre[class*=language-]{color:#f8f8f2;background:0 0;text-shadow:0 1px rgba(0,0,0,.3);font-family:Consolas,Monaco,"Andale Mono","Ubuntu Mono",monospace;text-align:left;white-space:pre;word-spacing:normal;word-break:normal;word-wrap:normal;line-height:1.5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-hyphens:none;-moz-hyphens:none;-ms-hyphens:none;hyphens:none}pre[class*=language-]{padding:1em;margin:.5em 0;overflow:auto;border-radius:.3em}:not(pre)>code[class*=language-],pre[class*=language-]{background:#272822}:not(pre)>code[class*=language-]{padding:.1em;border-radius:.3em;white-space:normal}.token.cdata,.token.comment,.token.doctype,.token.prolog{color:#708090}.token.punctuation{color:#f8f8f2}.namespace{opacity:.7}.token.constant,.token.deleted,.token.property,.token.symbol,.token.tag{color:#f92672}.token.boolean,.token.number{color:#ae81ff}.token.attr-name,.token.builtin,.token.char,.token.inserted,.token.selector,.token.string{color:#a6e22e}.language-css .token.string,.style .token.string,.token.entity,.token.operator,.token.url,.token.variable{color:#f8f8f2}.token.atrule,.token.attr-value,.token.function{color:#e6db74}.token.keyword{color:#66d9ef}.token.important,.token.regex{color:#fd971f}.token.bold,.token.important{font-weight:700}.token.italic{font-style:italic}.token.entity{cursor:help}');
         // Custom css to fix some layout problems because of the insertion of <code> element
         styleArray.push('pre>code{border-radius:initial;display:initial;line-height:initial;margin-left:initial;overflow-y:initial;padding:initial}code,tt{background:initial;border:initial}.refract-container .deletion pre.source {background-color: #fff1f2 !important;} .refract-container .addition pre.source { background-color: #e8ffe8;}');
         style.innerHTML = styleArray.join('');
@@ -88,15 +88,31 @@ module.exports = (function syntaxHighlight() {
         });
     }
 
+
     function classifyDiffContainers() {
         return waitForRender('.bb-udiff').then(() => {
             const containers = Array.from(document.querySelectorAll('.bb-udiff:not([class*=language])'));
+            const REGEX_ASSETS = /\.(png|jpg|svg|snap)$/i;
 
             containers.forEach(container => {
                 const containerClass = container.getAttribute('class');
-                const languageClass = sourceHandler.getClassBasedOnExtension(container) || '';
-                if (containerClass.indexOf(languageClass) === -1) {
-                    container.setAttribute('class', `${containerClass} ${languageClass}`);
+                const isAssetDiff = REGEX_ASSETS.test(container.getAttribute('data-filename'));
+
+
+                if(isAssetDiff) {
+                    const diffContent = container.querySelector('.diff-content-container');
+
+                    container.querySelector('.heading').onclick = () => {
+                        diffContent.style.display = diffContent.style.display === 'block'? 'none' : 'block';
+                    };
+
+                    diffContent.style.display = 'none';
+                    diffContent.style.cursor = 'row-resize';
+                } else {
+                    const languageClass = sourceHandler.getClassBasedOnExtension(container) || '';
+                    if (containerClass.indexOf(languageClass) === -1) {
+                        container.setAttribute('class', `${containerClass} ${languageClass}`);
+                    }
                 }
             });
 
