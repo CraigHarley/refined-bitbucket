@@ -39,9 +39,27 @@ module.exports = (function syntaxHighlight() {
         style = null;
     }
 
+    function collapseSectionMain() {
+        const section  = document.querySelector('#pullrequest-diff .main');
+        const heading = section.querySelector('h1');
+        const fileList = section.querySelector('ul');
+
+        const toggleHide = () => {
+            const shouldHide = fileList.style.display !== 'none';
+            fileList.style.display = shouldHide? 'none':'block';
+        }
+
+        heading.style.cursor = 'row-resize';
+        heading.onclick = toggleHide;
+        toggleHide();
+    }
+
     function highlightAll() {
         Promise.all([classifyDiffContainers(), transformPreElements()])
-        .then(() => Prism.highlightAll());
+        .then(() => {
+            Prism.highlightAll();
+            collapseSectionMain();
+        });
     }
 
     function listenForSideDiffScroll(args) {
