@@ -44,7 +44,7 @@ module.exports = {
     '.rs': 'language-rust',
     '.rlib': 'language-rust',
     '.jsx': 'language-jsx',
-    '.tsx': 'language-jsx',
+    '.tsx': 'language-typescript',
     '.rb': 'language-ruby',
     '.sass': 'language-sass',
     '.scss': 'language-scss',

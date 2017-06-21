@@ -28,8 +28,8 @@ module.exports = (function syntaxHighlight() {
         let style = document.createElement('style');
         const styleArray = [];
         style.type = 'text/css';
-        // Prism css: okaidia theme
-        styleArray.push('code[class*=language-],pre[class*=language-]{color:#f8f8f2;background:0 0;text-shadow:0 1px rgba(0,0,0,.3);font-family:Consolas,Monaco,"Andale Mono","Ubuntu Mono",monospace;text-align:left;white-space:pre;word-spacing:normal;word-break:normal;word-wrap:normal;line-height:1.5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-hyphens:none;-moz-hyphens:none;-ms-hyphens:none;hyphens:none}pre[class*=language-]{padding:1em;margin:.5em 0;overflow:auto;border-radius:.3em}:not(pre)>code[class*=language-],pre[class*=language-]{background:#272822}:not(pre)>code[class*=language-]{padding:.1em;border-radius:.3em;white-space:normal}.token.cdata,.token.comment,.token.doctype,.token.prolog{color:#708090}.token.punctuation{color:#f8f8f2}.namespace{opacity:.7}.token.constant,.token.deleted,.token.property,.token.symbol,.token.tag{color:#f92672}.token.boolean,.token.number{color:#ae81ff}.token.attr-name,.token.builtin,.token.char,.token.inserted,.token.selector,.token.string{color:#a6e22e}.language-css .token.string,.style .token.string,.token.entity,.token.operator,.token.url,.token.variable{color:#f8f8f2}.token.atrule,.token.attr-value,.token.function{color:#e6db74}.token.keyword{color:#66d9ef}.token.important,.token.regex{color:#fd971f}.token.bold,.token.important{font-weight:700}.token.italic{font-style:italic}.token.entity{cursor:help}');
+        // Prism css: coy theme
+        styleArray.push('code[class*=language-],pre[class*=language-]{color:#000;background:0 0;font-family:Consolas,Monaco,"Andale Mono","Ubuntu Mono",monospace;text-align:left;white-space:pre;word-spacing:normal;word-break:normal;word-wrap:normal;line-height:1.5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-hyphens:none;-moz-hyphens:none;-ms-hyphens:none;hyphens:none}code[class*=language]{max-height:inherit;height:100%;display:block;overflow:auto}:not(pre)>code[class*=language-],pre[class*=language-]{background-color:#fdfdfd;-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box;}:not(pre)>code[class*=language-]{position:relative;padding:.2em;border-radius:.3em;color:#c92c2c;border:1px solid rgba(0,0,0,.1);display:inline;white-space:normal}.token.block-comment,.token.cdata,.token.comment,.token.doctype,.token.prolog{color:#7D8B99}.token.punctuation{color:#5F6364}.token.boolean,.token.constant,.token.deleted,.token.function-name,.token.number,.token.property,.token.symbol,.token.tag{color:#c92c2c}.token.attr-name,.token.builtin,.token.char,.token.function,.token.inserted,.token.selector,.token.string{color:#2f9c0a}.token.entity,.token.operator,.token.url,.token.variable{color:#a67f59;background:rgba(255,255,255,.5)}.token.atrule,.token.attr-value,.token.class-name,.token.keyword{color:#1990b8}.token.important,.token.regex{color:#e90}.language-css .token.string,.style .token.string{color:#a67f59;background:rgba(255,255,255,.5)}.token.important{font-weight:400}.token.bold{font-weight:700}.token.italic{font-style:italic}.token.entity{cursor:help}.namespace{opacity:.7}@media screen and (max-width:767px){pre[class*=language-]:after,pre[class*=language-]:before{bottom:14px;box-shadow:none}}.token.cr:before,.token.lf:before,.token.tab:not(:empty):before{color:#e0d7d1}pre[class*=language-].line-numbers{padding-left:0}pre[class*=language-].line-numbers code{padding-left:3.8em}pre[class*=language-].line-numbers .line-numbers-rows{left:0}pre[class*=language-][data-line]{padding-top:0;padding-bottom:0;padding-left:0}pre[data-line] code{position:relative;padding-left:4em}pre .line-highlight{margin-top:0}');
         // Custom css to fix some layout problems because of the insertion of <code> element
         styleArray.push('pre>code{border-radius:initial;display:initial;line-height:initial;margin-left:initial;overflow-y:initial;padding:initial}code,tt{background:initial;border:initial}.refract-container .deletion pre.source {background-color: #fff1f2 !important;} .refract-container .addition pre.source { background-color: #e8ffe8;}');
         style.innerHTML = styleArray.join('');
@@ -101,19 +101,24 @@ module.exports = (function syntaxHighlight() {
 
                 if(isAssetDiff) {
                     const diffContent = container.querySelector('.diff-content-container');
+                    const heading = container.querySelector('.heading');
+                    heading.style.cursor = 'row-resize';
 
-                    container.querySelector('.heading').onclick = () => {
-                        diffContent.style.display = diffContent.style.display === 'block'? 'none' : 'block';
+                    const toggleHide = () => {
+                        const shouldHide = diffContent.style.display !== 'none';
+                        container.style.marginTop = shouldHide? '0px' : '40px';
+                        diffContent.style.display = shouldHide? 'none' : 'block';
                     };
 
-                    diffContent.style.display = 'none';
-                    diffContent.style.cursor = 'row-resize';
+                    heading.onclick = toggleHide;
+                    toggleHide();
                 } else {
                     const languageClass = sourceHandler.getClassBasedOnExtension(container) || '';
                     if (containerClass.indexOf(languageClass) === -1) {
                         container.setAttribute('class', `${containerClass} ${languageClass}`);
                     }
                 }
+
             });
 
             return Promise.resolve();
@@ -127,6 +132,7 @@ module.exports = (function syntaxHighlight() {
             sourceLines.forEach(line => {
                 const codeElement = sourceHandler.getCodeElementFromPre(line);
                 line.innerHTML = codeElement.outerHTML;
+                line.setAttribute('data-refined-bb', true);
             });
 
             return Promise.resolve(sourceLines);
