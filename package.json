@@ -4,7 +4,8 @@
   "main": "index.js",
   "scripts": {
     "test": "xo src/*.js src/**/*.js && browserify test/*.spec.js | tape-run",
-    "build": "browserify src/*.js src/**/*.js -o extension/extension.js"
+    "build": "browserify src/*.js src/**/*.js -o extension/extension.js ; npm run postbuild",
+    "postbuild": "node scripts/addLastBuildDateInManifest.js"
   },
   "repository": {
     "type": "git",
@@ -37,5 +38,7 @@
       "MutationObserver"
     ]
   },
-  "dependencies": {}
+  "dependencies": {
+    "json-update": "^3.0.0"
+  }
 }
