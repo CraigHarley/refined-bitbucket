@@ -18,3 +18,4 @@ And you're all set!
 - Collapsible assets diff content (`.png`, `.jpg`, `.svg`, `.snap`)
 - `.tsx` files now correctly identified as TypeScript files 
 - Slightly modified PrismJS coy theme: highlight colors have better contrast
+- Added Github like DiffStat widget to the changeset summary

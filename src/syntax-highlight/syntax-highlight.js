@@ -2,6 +2,7 @@
 
 'use strict';
 
+const diffStat = require('../diff-stat');
 const waitForRender = require('../wait-for-render');
 const pubsub = require('../pubsub');
 const debounce = require('../debounce');
@@ -18,7 +19,8 @@ module.exports = (function syntaxHighlight() {
     return {
         init() {
             insertStyles();
-            highlightAll();
+            highlightAll()
+                .then(showDiffStat);
         }
     };
 
@@ -34,9 +36,24 @@ module.exports = (function syntaxHighlight() {
         styleArray.push('pre>code{border-radius:initial;display:initial;line-height:initial;margin-left:initial;overflow-y:initial;padding:initial}code,tt{background:initial;border:initial}.refract-container .deletion pre.source {background-color: #fff1f2 !important;} .refract-container .addition pre.source { background-color: #e8ffe8;}');
         style.innerHTML = styleArray.join('');
         head.insertBefore(style, lastHeadElement);
+
+        const diffStatStyle = document.createElement('style');
+        diffStatStyle.innerHTML = diffStat.styles;
+        head.appendChild(diffStatStyle);
+
         head = null;
         lastHeadElement = null;
         style = null;
+    }
+
+    function showDiffStat(){
+        const diff = document.getElementById('pullrequest-diff');
+        const stat = diffStat.render(
+            diff.querySelectorAll('.udiff-line.addition').length,
+            diff.querySelectorAll('.udiff-line.deletion').length,
+            diff.querySelectorAll('.conflicts').length
+        );
+        diff.querySelector('section.main h1').appendChild(stat);
     }
 
     function collapseSectionMain() {
@@ -55,7 +72,7 @@ module.exports = (function syntaxHighlight() {
     }
 
     function highlightAll() {
-        Promise.all([classifyDiffContainers(), transformPreElements()])
+        return Promise.all([classifyDiffContainers(), transformPreElements()])
         .then(() => {
             Prism.highlightAll();
             collapseSectionMain();
