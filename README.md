@@ -1,4 +1,4 @@
-# jim-d53 fork of [`refined-bitbucket`](https://github.com/andremw/refined-bitbucket)
+# A fork of jim-d53 fork of [`refined-bitbucket`](https://github.com/andremw/refined-bitbucket)
 
 To build this and use it as a Chrome extension:
 
